@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/glfw-populate"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/cc1927a2330d66c89cea0ccaefc02f2d/glfw-populate.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/104e291c3018bc3cac8fec7162999eee/glfw-populate-complete.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-build.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-configure.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-download.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-install.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-mkdir.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-patch.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-test.rule"
+		},
+		{
+			"file" : "D:/Project/CPP/PhysicsEngine3D/build/_deps/glfw-subbuild/CMakeFiles/a503dc16348ba208b5d23f0f2b15f466/glfw-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"glfw-populate"
+		],
+		"name" : "glfw-populate"
+	}
+}

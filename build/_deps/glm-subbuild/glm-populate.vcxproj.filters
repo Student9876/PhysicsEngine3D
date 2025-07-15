@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\892c0b26d15b33168499a54cc85c95cd\glm-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\acd33e8fcda243eee2d1cbe00affcf92\glm-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\ec9662ea6f1d204e189e0fa0d8838eb4\glm-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glm-subbuild\CMakeFiles\glm-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{33C3FB96-BE5F-3A7C-85CA-B216F6EC41FD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

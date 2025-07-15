@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\CMakeFiles\fa9b3d741829f1f4d2b90fd25901704a\update_mappings.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glfw-src\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glfw-src\src\mappings.h.in">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glfw-src\CMake\GenerateMappings.cmake" />
+    <None Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glfw-build\src\CMakeFiles\update_mappings" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{A57182B3-5E14-30F6-823C-2907594E468B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{EC751CCE-8C01-3C89-8C5A-98F2097FDFF7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

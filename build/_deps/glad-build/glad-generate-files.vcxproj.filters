@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\CMakeFiles\43ad12a184090a055f3b7d27a7bd54ce\glad.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\CMakeFiles\88fc822f6e7ec43f853f19cf50b94cff\glad-generate-files.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glad-src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Project\CPP\PhysicsEngine3D\build\_deps\glad-build\CMakeFiles\glad-generate-files" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{A57182B3-5E14-30F6-823C-2907594E468B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
