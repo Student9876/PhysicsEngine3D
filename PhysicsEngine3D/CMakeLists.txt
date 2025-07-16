@@ -35,12 +35,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
+
 # Link libraries to target
+find_package(OpenGL REQUIRED)
+
 target_link_libraries(PhysicsEngine3D PRIVATE
-  glfw
-  glad
-  glm
-  opengl32
+    glfw
+    glad
+    glm
+    OpenGL::GL
 )
 
 # Include directories
@@ -48,7 +51,7 @@ target_include_directories(PhysicsEngine3D PRIVATE
   ${glfw_SOURCE_DIR}/include
   ${glad_SOURCE_DIR}/include
   ${glm_SOURCE_DIR}
-  thirdparty/glad-build/include
+  build/_deps/glad-build/include
   ${CMAKE_CURRENT_SOURCE_DIR}
 
 )
