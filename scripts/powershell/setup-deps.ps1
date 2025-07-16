@@ -1,7 +1,7 @@
 # Dependency setup for Windows
 
 if (!(Test-Path "vcpkg")) {
-    git clone https://github.com/Microsoft/vcpkg.git
+    git clone "https://github.com/Microsoft/vcpkg.git"
     .\vcpkg\bootstrap-vcpkg.bat
 }
 
