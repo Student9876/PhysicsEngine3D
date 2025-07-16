@@ -7,7 +7,7 @@
 build
 /vcpkg
 **/thirdparty
-
+/out
 
 
 # User-specific files

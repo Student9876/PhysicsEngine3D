@@ -1,0 +1,78 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cmake",
+			"label": "CMake: build",
+			"command": "build",
+			"targets": [
+				"all"
+			],
+			"preset": "__defaultBuildPreset__",
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CMake template build task"
+		},
+		{
+			"type": "shell",
+			"label": "CMake: Configure (linux-debug)",
+			"command": "cmake",
+			"args": [
+				"--preset",
+				"linux-debug"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Configure with linux-debug preset"
+		},
+		{
+			"type": "shell",
+			"label": "CMake: Build (linux-debug)",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/out/build/linux-debug"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Build the project with linux-debug preset",
+			"dependsOn": "CMake: Configure (linux-debug)"
+		},
+		{
+			"type": "shell",
+			"label": "CMake: Set Execute Permission",
+			"command": "chmod",
+			"args": [
+				"+x",
+				"${workspaceFolder}/out/build/linux-debug/${workspaceFolderBasename}/${workspaceFolderBasename}"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Make the executable file executable",
+			"dependsOn": "CMake: Build (linux-debug)"
+		},
+		{
+			"type": "shell",
+			"label": "CMake: Run PhysicsEngine3D",
+			"command": "${workspaceFolder}/out/build/linux-debug/${workspaceFolderBasename}/${workspaceFolderBasename}",
+			"group": "test",
+			"problemMatcher": [],
+			"detail": "Run the PhysicsEngine3D executable",
+			"dependsOn": "CMake: Set Execute Permission"
+		},
+		{
+			"type": "shell",
+			"label": "CMake: Configure, Build & Run",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"CMake: Configure (linux-debug)",
+				"CMake: Build (linux-debug)",
+				"CMake: Set Execute Permission",
+				"CMake: Run PhysicsEngine3D"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Complete workflow: configure, build, and run"
+		}
+	]
+}
