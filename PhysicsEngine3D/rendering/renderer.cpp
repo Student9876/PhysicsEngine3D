@@ -71,24 +71,28 @@ glm::mat4 Renderer::getProjectionMatrix() const {
 }
 
 void Renderer::draw(const Object3D& object, const Camera& camera) const {
-    if (basicShader) {
-        basicShader->use();
-        
-        // Create transformation matrices
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, object.position);
-        model = glm::scale(model, object.size);
-        
-        glm::mat4 view = camera.getViewMatrix();
-        glm::mat4 projection = getProjectionMatrix();
-        
-        // Set uniforms
-        basicShader->setMat4("model", model);
-        basicShader->setMat4("view", view);
-        basicShader->setMat4("projection", projection);
-        basicShader->setVec3("objectColor", glm::vec3(0.8f, 0.3f, 0.2f));
-        basicShader->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    }
-    
-    object.draw();
+  if (basicShader) {
+    basicShader->use();
+
+    // Create transformation matrices
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, object.position);
+    model = glm::scale(model, object.size);
+
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 projection = getProjectionMatrix();
+
+    // Set uniforms
+    basicShader->setMat4("model", model);
+    basicShader->setMat4("view", view);
+    basicShader->setMat4("projection", projection);
+    basicShader->setVec3("objectColor", object.color);  // Use object's color
+    basicShader->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    // You might also want to add these for proper lighting:
+    basicShader->setVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
+    basicShader->setVec3("viewPos", camera.position);
+  }
+
+  object.draw();
 }
