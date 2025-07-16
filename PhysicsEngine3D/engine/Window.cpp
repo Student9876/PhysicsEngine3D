@@ -1,6 +1,7 @@
 #include "engine/Window.hpp"
 #include <iostream>
 
+std::function<void(int, int)> Window::resizeCallback;
 
 Window::Window(int width, int height, const std::string& title) {
     if (!glfwInit()) {
@@ -23,6 +24,8 @@ Window::Window(int width, int height, const std::string& title) {
     }
 
     glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD\n";
         std::exit(-1);
@@ -33,8 +36,19 @@ Window::Window(int width, int height, const std::string& title) {
 
 Window::~Window() {
     glfwDestroyWindow(window);
+    glfwTerminate();
 }
 
 GLFWwindow* Window::getGLFWwindow() const {
     return window;
+}
+
+void Window::setResizeCallback(std::function<void(int, int)> callback) {
+    resizeCallback = callback;
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    if (resizeCallback) {
+        resizeCallback(width, height);
+    }
 }

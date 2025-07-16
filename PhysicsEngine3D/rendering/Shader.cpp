@@ -7,6 +7,10 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
     std::string vertexCode = loadShaderSource(vertexPath);
     std::string fragmentCode = loadShaderSource(fragmentPath);
     
+    if (vertexCode.empty() || fragmentCode.empty()) {
+        throw std::runtime_error("Failed to load shader source files");
+    }
+    
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
 
@@ -65,17 +69,21 @@ void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
 
 std::string Shader::loadShaderSource(const std::string& path) {
     std::ifstream shaderFile;
-    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     
     try {
         shaderFile.open(path);
+        if (!shaderFile.is_open()) {
+            std::cerr << "ERROR::SHADER::FILE_NOT_FOUND: " << path << std::endl;
+            return "";
+        }
+        
         std::stringstream shaderStream;
         shaderStream << shaderFile.rdbuf();
         shaderFile.close();
         return shaderStream.str();
     }
     catch (std::ifstream::failure& e) {
-        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << path << " - " << e.what() << std::endl;
         return "";
     }
 }
@@ -89,12 +97,14 @@ void Shader::checkCompileErrors(unsigned int shader, const std::string& type) {
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
             std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << std::endl;
+            throw std::runtime_error("Shader compilation failed: " + type);
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
             std::cerr << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << std::endl;
+            throw std::runtime_error("Shader program linking failed");
         }
     }
 }
