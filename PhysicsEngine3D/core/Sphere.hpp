@@ -3,7 +3,7 @@
 
 class Sphere : public Object3D {
 public:
-  Sphere(glm::vec3 pos = glm::vec3(0.0f), float radius = 1.0f, int latitudeSegments = 32, int longitudeSegments = 32);
+  Sphere(glm::vec3 pos = glm::vec3(0.0f), float radius = 1.0f, int latitudeSegments = 32, int longitudeSegments = 32, glm::vec3 col = glm::vec3(0.0f, 0.8f, 1.0f));
   ~Sphere();
 
   void draw() const override;

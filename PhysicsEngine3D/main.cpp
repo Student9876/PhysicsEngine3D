@@ -38,13 +38,13 @@ int main() {
 
 
   // Add spheres
-  auto sphere1 = std::make_shared<Sphere>(glm::vec3(2.0f, 0.0f, 0.0f), 1.0f, 32, 32);
+  auto sphere1 = std::make_shared<Sphere>(glm::vec3(2.0f, 0.0f, 0.0f), 1.0f, 32, 32, glm::vec3(1.0f, 0.2f, 0.2f));
   scene.addObject(sphere1);
 
-  auto sphere2 = std::make_shared<Sphere>(glm::vec3(0.0f, 2.0f, 0.0f), 0.5f, 16, 16);
+  auto sphere2 = std::make_shared<Sphere>(glm::vec3(0.0f, 2.0f, 0.0f), 0.5f, 16, 16, glm::vec3(0.2f, 1.0f, 0.2f));
   scene.addObject(sphere2);
 
-  auto sphere3 = std::make_shared<Sphere>(glm::vec3(0.0f, -2.0f, 0.0f), 1.5f, 24, 24);
+  auto sphere3 = std::make_shared<Sphere>(glm::vec3(0.0f, -2.0f, 0.0f), 0.5f, 24, 24, glm::vec3(0.2f, 0.2f, 1.0f));
   scene.addObject(sphere3);
 
 

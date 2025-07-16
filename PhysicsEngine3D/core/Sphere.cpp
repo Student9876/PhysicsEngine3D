@@ -4,11 +4,13 @@
 #include <vector>
 
 
-const float M_PI = 3.14159265358979323846f; // Define PI if not already defined
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 
-Sphere::Sphere(glm::vec3 pos, float radius, int latitudeSegments, int longitudeSegments)
-  : Object3D(pos), radius(radius), latitudeSegments(latitudeSegments),
+Sphere::Sphere(glm::vec3 pos, float radius, int latitudeSegments, int longitudeSegments, glm::vec3 col)
+  : Object3D(pos, glm::vec3(radius * 2.0f), col), radius(radius), latitudeSegments(latitudeSegments),
   longitudeSegments(longitudeSegments), VAO(0), VBO(0), EBO(0), indexCount(0) {
   initMesh();
 }
