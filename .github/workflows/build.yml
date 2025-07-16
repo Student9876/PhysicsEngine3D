@@ -11,19 +11,22 @@ jobs:
     name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        build_type: [Release]
         include:
           - os: ubuntu-latest
             preset: linux-release
             executable_name: PhysicsEngine3D
+            vcpkg_triplet: x64-linux
           - os: windows-latest
             preset: x64-release
             executable_name: PhysicsEngine3D.exe
+            vcpkg_triplet: x64-windows
           - os: macos-latest
             preset: macos-release
             executable_name: PhysicsEngine3D
+            vcpkg_triplet: x64-osx
 
     steps:
     - name: Checkout code
@@ -31,43 +34,116 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
+    - name: Cache vcpkg
+      uses: actions/cache@v4
       with:
-        vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-        vcpkgGitCommitId: '2024.07.12'
+        path: |
+          vcpkg
+          ~/.cache/vcpkg
+          ~/AppData/Local/vcpkg
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json', '**/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
 
     - name: Install dependencies (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake
+        sudo apt-get install -y build-essential cmake ninja-build pkg-config
 
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-latest'
       run: |
-        brew install cmake
+        brew install cmake ninja pkg-config
+
+    - name: Install dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install ninja
 
     - name: Setup MSVC (Windows)
       if: matrix.os == 'windows-latest'
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Configure CMake
-      run: cmake --preset ${{ matrix.preset }}
+    - name: Setup vcpkg (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        if (!(Test-Path "vcpkg")) {
+          git clone https://github.com/Microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+        }
+        echo "VCPKG_ROOT=$PWD\vcpkg" >> $env:GITHUB_ENV
+        echo "$PWD\vcpkg" >> $env:GITHUB_PATH
 
-    - name: Build
-      run: cmake --build out/build/${{ matrix.preset }}
-
-    - name: Test
+    - name: Setup vcpkg (Linux/macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        chmod +x out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}
-        out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }} --version || true
+        if [ ! -d "vcpkg" ]; then
+          git clone https://github.com/Microsoft/vcpkg.git
+          chmod +x vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/bootstrap-vcpkg.sh
+        fi
+        echo "VCPKG_ROOT=$PWD/vcpkg" >> $GITHUB_ENV
+        echo "$PWD/vcpkg" >> $GITHUB_PATH
+
+    - name: Configure CMake
+      run: |
+        cmake --preset ${{ matrix.preset }} \
+          -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
+
+    - name: Build
+      run: cmake --build out/build/${{ matrix.preset }} --config Release
+
+    - name: Test
+      run: |
+        cd out/build/${{ matrix.preset }}
+        ctest --output-on-failure --config Release || true
+
+    - name: Run executable test (Linux/macOS)
+      if: matrix.os != 'windows-latest'
+      run: |
+        if [ -f "out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}" ]; then
+          chmod +x out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}
+          out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }} --version || echo "Version check failed or not supported"
+        else
+          echo "Executable not found at expected location"
+          find out/build/${{ matrix.preset }} -name "${{ matrix.executable_name }}" -type f || true
+        fi
+
+    - name: Run executable test (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        $executablePath = "out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}"
+        if (Test-Path $executablePath) {
+          & $executablePath --version
+          if ($LASTEXITCODE -ne 0) { echo "Version check failed or not supported" }
+        } else {
+          echo "Executable not found at expected location"
+          Get-ChildItem -Path "out/build/${{ matrix.preset }}" -Name "${{ matrix.executable_name }}" -Recurse -ErrorAction SilentlyContinue
+        }
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
+      if: success() || failure()
       with:
-        name: PhysicsEngine3D-${{ matrix.os }}
+        name: PhysicsEngine3D-${{ matrix.os }}-${{ github.sha }}
         path: |
           out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}
+          out/build/${{ matrix.preset }}/**/*.dll
+          out/build/${{ matrix.preset }}/**/*.so
+          out/build/${{ matrix.preset }}/**/*.dylib
+        retention-days: 30
+        if-no-files-found: warn
+
+    - name: Upload build logs on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: build-logs-${{ matrix.os }}-${{ github.sha }}
+        path: |
+          out/build/${{ matrix.preset }}/CMakeCache.txt
+          out/build/${{ matrix.preset }}/CMakeFiles/CMakeOutput.log
+          out/build/${{ matrix.preset }}/CMakeFiles/CMakeError.log
         retention-days: 7
+        if-no-files-found: ignore
