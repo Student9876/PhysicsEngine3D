@@ -87,7 +87,7 @@ void Renderer::draw(const Object3D& object, const Camera& camera) const {
     basicShader->setMat4("view", view);
     basicShader->setMat4("projection", projection);
     basicShader->setVec3("objectColor", object.color);  // Use object's color
-    basicShader->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    basicShader->setVec3("lightColor", glm::vec3(2.0f, 2.0f, 2.0f));
 
     // You might also want to add these for proper lighting:
     basicShader->setVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));

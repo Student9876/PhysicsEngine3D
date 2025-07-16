@@ -10,8 +10,8 @@
 #include "core/Sphere.hpp"
 
 
-int screenWidth = 1280;
-int screenHeight = 720;
+int screenWidth = 1920;
+int screenHeight = 1080;
 
 int main() {
   // Create OpenGL context window
@@ -30,7 +30,7 @@ int main() {
   scene.setCamera(camera);
 
   // Add one block (cube)
-  auto cube = std::make_shared<Block>(glm::vec3(0.0f, 0.0f, 0.0f));
+  auto cube = std::make_shared<Block>(glm::vec3(-2.0f, -2.0f, -2.0f));
   scene.addObject(cube);
 
 
