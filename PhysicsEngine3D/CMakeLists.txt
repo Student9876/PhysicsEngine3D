@@ -1,12 +1,26 @@
 ﻿# CMakeList.txt : CMake project for PhysicsEngine3D
 
 # Add source to this project's executable
-add_executable(PhysicsEngine3D "main.cpp"  "core/Object3D.cpp" "core/camera.cpp" "core/scene.cpp" "rendering/renderer.cpp"  "engine/Window.cpp" "engine/Input.cpp" "core/Block.cpp")
+add_executable(PhysicsEngine3D 
+    "main.cpp"  
+    "core/Object3D.cpp" 
+    "core/camera.cpp" 
+    "core/scene.cpp" 
+    "rendering/renderer.cpp"  
+    "rendering/Shader.cpp"
+    "engine/Window.cpp" 
+    "engine/Input.cpp" 
+    "core/Block.cpp"
+    "core/Light.cpp"
+)
 
 # Set C++ standard
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET PhysicsEngine3D PROPERTY CXX_STANDARD 20)
 endif()
+
+# Copy shader files to build directory
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR}/PhysicsEngine3D/)
 
 # Fetch dependencies
 
