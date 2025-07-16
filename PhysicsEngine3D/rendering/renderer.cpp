@@ -23,6 +23,8 @@ void Renderer::resize(int width, int height) {
 
 void Renderer::draw(const Object3D& object, const Camera& camera) const {
     // Placeholder: In future, this will bind VAO, use shader, apply MVP matrices
+    object.draw();
+
     std::cout << "Drawing object at position: "
         << object.position.x << ", "
         << object.position.y << ", "
