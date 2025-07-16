@@ -1,16 +1,13 @@
-#pragma once
-#include <glm/glm.hpp>
+#include "core/Object3D.hpp"
 
-class Object3D {
-public:
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
+Object3D::Object3D(glm::vec3 pos, glm::vec3 sz)
+    : position(pos), size(sz) {
+}
 
-    bool enablePhysics = false; 
+void Object3D::update(float /*deltaTime*/) {
+    // Placeholder for physics logic
+}
 
-    Object3D();
-
-    virtual void update(float dt);
-    virtual void render() const;
-};
+bool Object3D::isSimulated() const {
+    return enablePhysics;
+}

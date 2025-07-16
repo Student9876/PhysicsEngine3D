@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for PhysicsEngine3D
 
 # Add source to this project's executable
-add_executable(PhysicsEngine3D "main.cpp" "PhysicsEngine3D.h" "core/Object3D.cpp")
+add_executable(PhysicsEngine3D "main.cpp"  "core/Object3D.cpp" "core/camera.cpp" "core/scene.cpp" "rendering/renderer.cpp")
 
 # Set C++ standard
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -9,8 +9,8 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 # Fetch dependencies
-include(FetchContent)
 
+include(FetchContent)
 # GLFW
 FetchContent_Declare(
   glfw
@@ -47,4 +47,7 @@ target_include_directories(PhysicsEngine3D PRIVATE
   ${glfw_SOURCE_DIR}/include
   ${glad_SOURCE_DIR}/include
   ${glm_SOURCE_DIR}
+  thirdparty/glad-build/include
+  ${CMAKE_CURRENT_SOURCE_DIR}
+
 )

@@ -1,8 +1,17 @@
 #pragma once
-#include "core/Camera.hpp"
-#include "core/Object3D.hpp"
 
-class Renderer3D {
+#include "core/Object3D.hpp"
+#include "core/camera.hpp"
+
+class Renderer {
 public:
-    void drawObject(const Object3D& obj, const Camera& cam);
+    Renderer(int screenWidth, int screenHeight);
+
+    void clear() const;
+    void draw(const Object3D& object, const Camera& camera) const;
+    void resize(int width, int height);
+
+private:
+    int screenWidth;
+    int screenHeight;
 };
