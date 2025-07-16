@@ -1,4 +1,4 @@
-# Common test script for Windows
+# Test script for Windows
 
 param(
     [string]$Preset,
@@ -7,15 +7,17 @@ param(
 
 # Run CTest
 Set-Location "out/build/$Preset"
-ctest --output-on-failure --config Release
+# Use --configuration instead of --config for cross-platform compatibility
+ctest --output-on-failure --configuration Release
 if ($LASTEXITCODE -ne 0) { echo "Tests failed or no tests found" }
 Set-Location "../../.."
 
-# Test executable
+# Test executable - skip GUI testing in CI environments
 $executablePath = "out/build/$Preset/PhysicsEngine3D/$ExecutableName"
 if (Test-Path $executablePath) {
-    & $executablePath --version
-    if ($LASTEXITCODE -ne 0) { echo "Version check failed or not supported" }
+    echo "Executable found at: $executablePath"
+    # Skip running GUI executable in CI to avoid GLFW initialization errors
+    echo "Skipping executable test in CI environment (GUI applications require display)"
 } else {
     echo "Executable not found at expected location"
     Get-ChildItem -Path "out/build/$Preset" -Name "$ExecutableName" -Recurse -ErrorAction SilentlyContinue
