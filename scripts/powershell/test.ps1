@@ -7,7 +7,7 @@ param(
 
 # Run CTest
 Set-Location "out/build/$Preset"
-ctest --output-on-failure --config Release
+ctest --output-on-failure Release
 if ($LASTEXITCODE -ne 0) { echo "Tests failed or no tests found" }
 Set-Location "../../.."
 
