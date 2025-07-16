@@ -1,4 +1,4 @@
-name: Build
+name: Build and Test PhysicsEngine3D
 
 on:
   push:
@@ -45,91 +45,45 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-vcpkg-
 
-    - name: Install dependencies (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake ninja-build pkg-config \
-          libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
-          libgl1-mesa-dev libglu1-mesa-dev
-
-    - name: Install dependencies (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew install cmake ninja pkg-config
-
-    - name: Install dependencies (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        choco install ninja
-
     - name: Setup MSVC (Windows)
       if: matrix.os == 'windows-latest'
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Setup vcpkg (Windows)
+    - name: Setup dependencies (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        if (!(Test-Path "vcpkg")) {
-          git clone https://github.com/Microsoft/vcpkg.git
-          .\vcpkg\bootstrap-vcpkg.bat
-        }
-        echo "VCPKG_ROOT=$PWD\vcpkg" >> $env:GITHUB_ENV
-        echo "$PWD\vcpkg" >> $env:GITHUB_PATH
+        chmod +x scripts/powershell/setup-deps.ps1
+        ./scripts/powershell/setup-deps.ps1
 
-    - name: Setup vcpkg (Linux/macOS)
+    - name: Setup dependencies (Linux/macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        if [ ! -d "vcpkg" ]; then
-          git clone https://github.com/Microsoft/vcpkg.git
-          chmod +x vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/bootstrap-vcpkg.sh
-        fi
-        echo "VCPKG_ROOT=$PWD/vcpkg" >> $GITHUB_ENV
-        echo "$PWD/vcpkg" >> $GITHUB_PATH
+        chmod +x scripts/bash/setup-deps.sh
+        ./scripts/bash/setup-deps.sh
 
-    - name: Configure CMake (Windows)
+    - name: Build (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        cmake --preset ${{ matrix.preset }} -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
+        chmod +x scripts/powershell/build.ps1
+        ./scripts/powershell/build.ps1 -Preset ${{ matrix.preset }} -VcpkgTriplet ${{ matrix.vcpkg_triplet }}
 
-    - name: Configure CMake (Linux/macOS)
+    - name: Build (Linux/macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        cmake --preset ${{ matrix.preset }} \
-          -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
+        chmod +x scripts/bash/build.sh
+        ./scripts/bash/build.sh ${{ matrix.preset }} ${{ matrix.vcpkg_triplet }}
 
-    - name: Build
-      run: cmake --build out/build/${{ matrix.preset }} --config Release
-
-    - name: Test
-      run: |
-        cd out/build/${{ matrix.preset }}
-        ctest --output-on-failure --config Release || true
-
-    - name: Run executable test (Linux/macOS)
-      if: matrix.os != 'windows-latest'
-      run: |
-        if [ -f "out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}" ]; then
-          chmod +x out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}
-          out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }} --version || echo "Version check failed or not supported"
-        else
-          echo "Executable not found at expected location"
-          find out/build/${{ matrix.preset }} -name "${{ matrix.executable_name }}" -type f || true
-        fi
-
-    - name: Run executable test (Windows)
+    - name: Test (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        $executablePath = "out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }}"
-        if (Test-Path $executablePath) {
-          & $executablePath --version
-          if ($LASTEXITCODE -ne 0) { echo "Version check failed or not supported" }
-        } else {
-          echo "Executable not found at expected location"
-          Get-ChildItem -Path "out/build/${{ matrix.preset }}" -Name "${{ matrix.executable_name }}" -Recurse -ErrorAction SilentlyContinue
-        }
+        chmod +x scripts/powershell/test.ps1
+        ./scripts/powershell/test.ps1 -Preset ${{ matrix.preset }} -ExecutableName ${{ matrix.executable_name }}
+
+    - name: Test (Linux/macOS)
+      if: matrix.os != 'windows-latest'
+      run: |
+        chmod +x scripts/bash/test.sh
+        ./scripts/bash/test.sh ${{ matrix.preset }} ${{ matrix.executable_name }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4

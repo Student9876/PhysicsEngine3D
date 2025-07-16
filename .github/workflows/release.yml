@@ -1,4 +1,4 @@
-name: Release
+name: Release PhysicsEngine3D
 
 on:
   release:
@@ -11,10 +11,11 @@ on:
         type: string
 
 jobs:
-  build-release:
-    name: Build Release on ${{ matrix.os }}
+  build:
+    name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
@@ -22,14 +23,17 @@ jobs:
             preset: linux-release
             executable_name: PhysicsEngine3D
             asset_name: PhysicsEngine3D-linux-x64
+            vcpkg_triplet: x64-linux
           - os: windows-latest
             preset: x64-release
             executable_name: PhysicsEngine3D.exe
             asset_name: PhysicsEngine3D-windows-x64
+            vcpkg_triplet: x64-windows
           - os: macos-latest
             preset: macos-release
             executable_name: PhysicsEngine3D
             asset_name: PhysicsEngine3D-macos-x64
+            vcpkg_triplet: x64-osx
 
     steps:
     - name: Checkout code
@@ -37,88 +41,120 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Setup vcpkg (Windows)
+    - name: Cache vcpkg
+      uses: actions/cache@v4
+      with:
+        path: |
+          vcpkg
+          ~/.cache/vcpkg
+          ~/AppData/Local/vcpkg
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json', '**/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Setup MSVC (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Setup dependencies (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        git clone https://github.com/Microsoft/vcpkg.git
-        .\vcpkg\bootstrap-vcpkg.bat
+        chmod +x scripts/powershell/setup-deps.ps1
+        ./scripts/powershell/setup-deps.ps1
 
-    - name: Setup vcpkg (Linux/macOS)
+    - name: Setup dependencies (Linux/macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        git clone https://github.com/Microsoft/vcpkg.git
-        ./vcpkg/bootstrap-vcpkg.sh
+        chmod +x scripts/bash/setup-deps.sh
+        ./scripts/bash/setup-deps.sh
 
-    - name: Install dependencies (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake
-
-    - name: Configure CMake
-      run: cmake --preset ${{ matrix.preset }}
-
-    - name: Build
-      run: cmake --build out/build/${{ matrix.preset }} --config Release
-
-    - name: Package executable (Windows)
+    - name: Build (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        mkdir release
-        copy "out\build\${{ matrix.preset }}\PhysicsEngine3D\${{ matrix.executable_name }}" release\
-        7z a ${{ matrix.asset_name }}.zip release\*
+        chmod +x scripts/powershell/build.ps1
+        ./scripts/powershell/build.ps1 -Preset ${{ matrix.preset }} -VcpkgTriplet ${{ matrix.vcpkg_triplet }}
 
-    - name: Package executable (Linux/macOS)
+    - name: Build (Linux/macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        mkdir release
-        cp out/build/${{ matrix.preset }}/PhysicsEngine3D/${{ matrix.executable_name }} release/
-        chmod +x release/${{ matrix.executable_name }}
-        tar -czf ${{ matrix.asset_name }}.tar.gz -C release .
+        chmod +x scripts/bash/build.sh
+        ./scripts/bash/build.sh ${{ matrix.preset }} ${{ matrix.vcpkg_triplet }}
 
-    - name: Upload Release Asset (Windows)
+    - name: Package (Windows)
       if: matrix.os == 'windows-latest'
-      uses: actions/upload-release-asset@v1
+      run: |
+        chmod +x scripts/powershell/package.ps1
+        ./scripts/powershell/package.ps1 -Preset ${{ matrix.preset }} -ExecutableName ${{ matrix.executable_name }} -AssetName ${{ matrix.asset_name }}
+
+    - name: Package (Linux/macOS)
+      if: matrix.os != 'windows-latest'
+      run: |
+        chmod +x scripts/bash/package.sh
+        ./scripts/bash/package.sh ${{ matrix.preset }} ${{ matrix.executable_name }} ${{ matrix.asset_name }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.asset_name }}
+        path: |
+          ${{ matrix.asset_name }}.zip
+          ${{ matrix.asset_name }}.tar.gz
+        retention-days: 1
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: always() && needs.build.result == 'success'
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Prepare release assets
+      run: |
+        mkdir -p release-assets
+        find artifacts -type f \( -name "*.zip" -o -name "*.tar.gz" \) -exec cp {} release-assets/ \;
+        ls -la release-assets/
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release-assets/*
+        tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./${{ matrix.asset_name }}.zip
-        asset_name: ${{ matrix.asset_name }}.zip
-        asset_content_type: application/zip
-
-    - name: Upload Release Asset (Linux/macOS)
-      if: matrix.os != 'windows-latest'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./${{ matrix.asset_name }}.tar.gz
-        asset_name: ${{ matrix.asset_name }}.tar.gz
-        asset_content_type: application/gzip
 
   create-checksums:
     name: Create Checksums
-    needs: build-release
+    needs: release
     runs-on: ubuntu-latest
+    if: always() && needs.release.result == 'success'
+    
     steps:
     - name: Download Release Assets
-      uses: actions/download-release-assets@v1
+      uses: robinraju/release-downloader@v1.8
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        release-id: ${{ github.event.release.id }}
+        repository: ${{ github.repository }}
+        tag: ${{ github.event.inputs.tag || github.ref_name }}
+        fileName: "*"
+        out-file-path: "assets"
 
     - name: Generate Checksums
       run: |
-        sha256sum * > checksums.txt
+        cd assets
+        sha256sum *.zip *.tar.gz > ../checksums.txt 2>/dev/null || sha256sum * > ../checksums.txt
+        cd ..
+        cat checksums.txt
 
     - name: Upload Checksums
-      uses: actions/upload-release-asset@v1
+      uses: softprops/action-gh-release@v1
+      with:
+        files: checksums.txt
+        tag_name: ${{ github.event.inputs.tag || github.ref_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./checksums.txt
-        asset_name: checksums.txt
-        asset_content_type: text/plain
