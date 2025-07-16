@@ -12,7 +12,7 @@ add_executable(PhysicsEngine3D
     "engine/Input.cpp" 
     "core/Block.cpp"
     "core/Light.cpp"
-)
+ "core/Sphere.cpp")
 
 # Set C++ standard
 set_property(TARGET PhysicsEngine3D PROPERTY CXX_STANDARD 20)

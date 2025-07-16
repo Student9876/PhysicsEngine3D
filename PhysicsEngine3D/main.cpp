@@ -7,6 +7,8 @@
 #include "core/scene.hpp"
 #include "core/Block.hpp"
 #include "rendering/renderer.hpp"
+#include "core/Sphere.hpp"
+
 
 int screenWidth = 1280;
 int screenHeight = 720;
@@ -30,6 +32,22 @@ int main() {
   // Add one block (cube)
   auto cube = std::make_shared<Block>(glm::vec3(0.0f, 0.0f, 0.0f));
   scene.addObject(cube);
+
+
+
+
+
+  // Add spheres
+  auto sphere1 = std::make_shared<Sphere>(glm::vec3(2.0f, 0.0f, 0.0f), 1.0f, 32, 32);
+  scene.addObject(sphere1);
+
+  auto sphere2 = std::make_shared<Sphere>(glm::vec3(0.0f, 2.0f, 0.0f), 0.5f, 16, 16);
+  scene.addObject(sphere2);
+
+  auto sphere3 = std::make_shared<Sphere>(glm::vec3(0.0f, -2.0f, 0.0f), 1.5f, 24, 24);
+  scene.addObject(sphere3);
+
+
 
   // Timing
   float lastFrame = 0.0f;
