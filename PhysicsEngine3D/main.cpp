@@ -1,4 +1,5 @@
-﻿#include "glad/glad.h"
+﻿// Updated main.cpp with integrated Light system
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include "engine/Window.hpp"
 #include "engine/Input.hpp"
@@ -8,10 +9,87 @@
 #include "core/Block.hpp"
 #include "rendering/renderer.hpp"
 #include "core/Sphere.hpp"
-
+#include "core/Light.hpp"
+#include <vector>
+#include <memory>
 
 int screenWidth = 1920;
 int screenHeight = 1080;
+
+// Global lights for easy access
+std::vector<Light> sceneLights;
+
+void setupLights(Renderer& renderer) {
+  // Create a sun-like directional light
+  Light sun = Light::createSun(
+    glm::vec3(-0.3f, -0.8f, -0.5f),  // Direction (pointing down and slightly forward)
+    glm::vec3(1.0f, 0.95f, 0.8f),    // Warm sunlight color
+    1.9f                              // Brightness
+  );
+
+  // Create some point lights for variety
+  Light pointLight1 = Light::createPointLight(
+    glm::vec3(2.0f, 1.0f, 2.0f),     // Position
+    glm::vec3(0.8f, 0.4f, 0.2f),     // Orange color
+    0.8f                              // Brightness
+  );
+
+  Light pointLight2 = Light::createPointLight(
+    glm::vec3(-2.0f, 1.0f, -2.0f),   // Position
+    glm::vec3(0.2f, 0.4f, 0.8f),     // Blue color
+    0.6f                              // Brightness
+  );
+
+  // Create a spotlight
+  Light spotlight = Light::createSpotlight(
+    glm::vec3(0.0f, 5.0f, 0.0f),     // Position (above scene)
+    glm::vec3(0.0f, -1.0f, 0.0f),    // Direction (pointing down)
+    glm::vec3(1.0f, 1.0f, 1.0f),     // White color
+    1.0f,                             // Brightness
+    12.5f,                            // Inner cutoff (degrees)
+    17.5f                             // Outer cutoff (degrees)
+  );
+
+  // Add lights to the scene
+  sceneLights.push_back(sun);
+  sceneLights.push_back(pointLight1);
+  sceneLights.push_back(pointLight2);
+  sceneLights.push_back(spotlight);
+
+  // Set lights in renderer
+  renderer.setLights(sceneLights);
+}
+
+void updateLights(float deltaTime, Renderer& renderer) {
+  // Make the sun orbit around the scene
+  static float sunOrbitSpeed = 0.2f;
+  sceneLights[0].orbit(glm::vec3(0.0f, 0.0f, 0.0f), 8.0f, sunOrbitSpeed, deltaTime);
+
+  // Make point lights move
+  static float time = 0.0f;
+  time += deltaTime;
+
+  // Oscillate point light positions
+  sceneLights[1].setPosition(glm::vec3(
+    2.0f * sin(time * 0.5f),
+    1.0f + 0.5f * sin(time * 2.0f),
+    2.0f * cos(time * 0.5f)
+  ));
+
+  sceneLights[2].setPosition(glm::vec3(
+    -2.0f * sin(time * 0.3f),
+    1.0f + 0.3f * cos(time * 1.5f),
+    -2.0f * cos(time * 0.3f)
+  ));
+
+  // Update brightness based on sun position (day/night cycle)
+  float sunHeight = sceneLights[0].getPosition().y;
+  float dayBrightness = glm::clamp((sunHeight + 2.0f) / 4.0f, 0.1f, 1.2f);
+  sceneLights[0].setBrightness(dayBrightness);
+
+  // Update lights in renderer
+  renderer.setLights(sceneLights);
+}
 
 int main() {
   // Create OpenGL context window
@@ -29,13 +107,12 @@ int main() {
   // Set the same camera instance for the scene
   scene.setCamera(camera);
 
+  // Setup lighting system
+  setupLights(renderer);
+
   // Add one block (cube)
   auto cube = std::make_shared<Block>(glm::vec3(-2.0f, -2.0f, -2.0f));
   scene.addObject(cube);
-
-
-
-
 
   // Add spheres
   auto sphere1 = std::make_shared<Sphere>(glm::vec3(3.0f, 0.0f, 0.0f), 1.0f, 32, 32, glm::vec3(1.0f, 0.2f, 0.2f));
@@ -46,8 +123,6 @@ int main() {
 
   auto sphere3 = std::make_shared<Sphere>(glm::vec3(0.0f, -2.0f, 0.0f), 0.5f, 24, 24, glm::vec3(0.2f, 0.2f, 1.0f));
   scene.addObject(sphere3);
-
-
 
   // Timing
   float lastFrame = 0.0f;
@@ -64,6 +139,9 @@ int main() {
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Update lighting system
+    //updateLights(deltaTime, renderer);
 
     scene.update(deltaTime);   // physics placeholder
     scene.render(renderer);    // draw everything

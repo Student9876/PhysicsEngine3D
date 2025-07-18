@@ -1,26 +1,35 @@
 #pragma once
-
-#include "core/Object3D.hpp"
-#include "core/camera.hpp"
-#include "rendering/Shader.hpp"
 #include <memory>
+#include <vector>
+#include <glm/glm.hpp>
+
+// Forward declarations
+class Shader;
+class Object3D;
+class Camera;
+class Light;
 
 class Renderer {
 public:
-    Renderer(int screenWidth, int screenHeight);
-    ~Renderer();
+  Renderer(int width, int height);
+  ~Renderer();
 
-    void clear() const;
-    void draw(const Object3D& object, const Camera& camera) const;
-    void resize(int width, int height);
-    
-    // Get projection matrix for external use
-    glm::mat4 getProjectionMatrix() const;
+  void clear() const;
+  void resize(int width, int height);
+  void draw(const Object3D& object, const Camera& camera) const;
+
+  // Light management
+  void setLights(const std::vector<Light>& lights);
+  void addLight(const Light& light);
+  void clearLights();
+
+  glm::mat4 getProjectionMatrix() const;
 
 private:
-    int screenWidth;
-    int screenHeight;
-    std::unique_ptr<Shader> basicShader;
-    
-    void initializeShaders();
+  int screenWidth, screenHeight;
+  std::unique_ptr<Shader> basicShader;
+  std::vector<Light> lights;
+
+  void initializeShaders();
+  void setLightUniforms(const Shader& shader) const;
 };
