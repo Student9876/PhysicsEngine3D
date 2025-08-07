@@ -13,8 +13,8 @@
 #include <vector>
 #include <memory>
 
-int screenWidth = 1920;
-int screenHeight = 1080;
+int screenWidth = 1280;
+int screenHeight = 720;
 
 // Global lights for easy access
 std::vector<Light> sceneLights;
@@ -22,10 +22,16 @@ std::vector<Light> sceneLights;
 void setupLights(Renderer& renderer) {
   // Create a sun-like directional light
   Light sun = Light::createSun(
-    glm::vec3(-0.3f, -0.8f, -0.5f),  // Direction (pointing down and slightly forward)
-    glm::vec3(1.0f, 0.95f, 0.8f),    // Warm sunlight color
-    1.9f                              // Brightness
+    glm::vec3(-0.3f, -0.8f, -0.5f), // Direction
+    glm::vec3(1.0f, 0.95f, 0.8f),   // Color
+    1.0f                            // Brightness
   );
+  sun.setPosition(glm::vec3(0.0f, 5.0f, 0.0f)); // Place sun above scene
+  sun.setBrightness(1.2f);                      // Increase brightness
+  sun.setIntensity(1.0f);                       // Set intensity
+  // If you have a glow property, set it as well
+
+
 
   // Create some point lights for variety
   Light pointLight1 = Light::createPointLight(
@@ -52,9 +58,9 @@ void setupLights(Renderer& renderer) {
 
   // Add lights to the scene
   sceneLights.push_back(sun);
-  sceneLights.push_back(pointLight1);
-  sceneLights.push_back(pointLight2);
-  sceneLights.push_back(spotlight);
+  //sceneLights.push_back(pointLight1);
+  //sceneLights.push_back(pointLight2);
+  //sceneLights.push_back(spotlight);
 
   // Set lights in renderer
   renderer.setLights(sceneLights);
@@ -70,22 +76,22 @@ void updateLights(float deltaTime, Renderer& renderer) {
   time += deltaTime;
 
   // Oscillate point light positions
-  sceneLights[1].setPosition(glm::vec3(
-    2.0f * sin(time * 0.5f),
-    1.0f + 0.5f * sin(time * 2.0f),
-    2.0f * cos(time * 0.5f)
-  ));
+  //sceneLights[1].setPosition(glm::vec3(
+  //  2.0f * sin(time * 0.5f),
+  //  1.0f + 0.5f * sin(time * 2.0f),
+  //  2.0f * cos(time * 0.5f)
+  //));
 
-  sceneLights[2].setPosition(glm::vec3(
-    -2.0f * sin(time * 0.3f),
-    1.0f + 0.3f * cos(time * 1.5f),
-    -2.0f * cos(time * 0.3f)
-  ));
+  //sceneLights[2].setPosition(glm::vec3(
+  //  -2.0f * sin(time * 0.3f),
+  //  1.0f + 0.3f * cos(time * 1.5f),
+  //  -2.0f * cos(time * 0.3f)
+  //));
 
   // Update brightness based on sun position (day/night cycle)
-  float sunHeight = sceneLights[0].getPosition().y;
+  /*float sunHeight = sceneLights[0].getPosition().y;
   float dayBrightness = glm::clamp((sunHeight + 2.0f) / 4.0f, 0.1f, 1.2f);
-  sceneLights[0].setBrightness(dayBrightness);
+  sceneLights[0].setBrightness(dayBrightness);*/
 
   // Update lights in renderer
   renderer.setLights(sceneLights);
